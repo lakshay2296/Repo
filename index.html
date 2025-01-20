@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto News Verifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+        }
+        .news-item {
+            background: white;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .news-item h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .news-item p {
+            margin: 5px 0;
+        }
+        .news-source {
+            font-size: 0.9em;
+            color: gray;
+        }
+        .alert {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .alert.safe {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .alert.warning {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .coin-analysis {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .coin-analysis h2 {
+            margin-top: 0;
+        }
+        .details {
+            margin-top: 10px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Crypto News Verifier</h1>
+        <p>Stay informed with verified news. Detect fake viral promotions!</p>
+    </header>
+    <main>
+        <div class="coin-analysis">
+            <h2>Analyze a Coin</h2>
+            <p>Enter the name of a cryptocurrency to get verified insights and detect potential scams.</p>
+            <input type="text" id="coinName" placeholder="Enter coin name">
+            <button onclick="analyzeCoin()">Analyze</button>
+            <div id="analysisResult" style="margin-top: 20px;"></div>
+        </div>
+    </main>
+
+    <script>
+        async function analyzeCoin() {
+            const coinName = document.getElementById('coinName').value.trim().toLowerCase();
+            const resultDiv = document.getElementById('analysisResult');
+
+            if (!coinName) {
+                resultDiv.innerHTML = `<div class="alert warning">Please enter a coin name to analyze.</div>`;
+                return;
+            }
+
+            // Predefined checks for good and bad coins
+            const knownGoodCoins = ['bitcoin', 'ethereum', 'binance coin', 'cardano', 'solana', 'polkadot', 'chainlink', 'avalanche'];
+            const knownBadCoins = ['bitconnect', 'onecoin', 'plustoken', 'wotoken', 'bitpet', 'hawk tuah', 'procurrency', 'miningcity'];
+
+            // Check if the entered coin is in the list of known bad coins (scams)
+            if (knownBadCoins.includes(coinName)) {
+                resultDiv.innerHTML = `
+                    <div class="alert warning">
+                        Warning: ${coinName.charAt(0).toUpperCase() + coinName.slice(1)} is widely recognized as a scam and should be avoided.
+                        <div class="details">
+                            <strong>Why it's risky:</strong>
+                            <ul>
+                                <li>It has been flagged as a scam by multiple sources.</li>
+                                <li>Previous reports indicate fraudulent activity.</li>
+                                <li>Investors have suffered financial losses due to these scams.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                return; // Skip fetching news for known bad coins
+            }
+
+            // If the coin is recognized as a trusted good coin
+            if (knownGoodCoins.includes(coinName)) {
+                let detailedInfo = '';
+
+                // Provide detailed reasons why these coins are trustworthy
+                if (coinName === 'bitcoin') {
+                    detailedInfo = `
+                        <h3>Why Bitcoin is a trusted investment:</h3>
+                        <ul>
+                            <li><strong>Market Dominance:</strong> Bitcoin is the first and most widely recognized cryptocurrency, often referred to as "digital gold".</li>
+                            <li><strong>Widespread Adoption:</strong> Accepted by numerous retailers, businesses, and institutional investors worldwide.</li>
+                            <li><strong>Strong Security:</strong> Bitcoin's blockchain technology and decentralized nature make it highly secure and resistant to censorship.</li>
+                            <li><strong>Historical Performance:</strong> Bitcoin has shown consistent growth since its inception, making it one of the most profitable investments in the crypto space.</li>
+                            <li><strong>Trusted Exchanges:</strong> Bitcoin is listed on all major exchanges like Coinbase, Binance, and Kraken, making it easy to trade and invest in.</li>
+                        </ul>
+                    `;
+                } else if (coinName === 'ethereum') {
+                    detailedInfo = `
+                        <h3>Why Ethereum is a trusted investment:</h3>
+                        <ul>
+                            <li><strong>Smart Contracts:</strong> Ethereum introduced smart contracts, enabling decentralized applications (dApps) and decentralized finance (DeFi).</li>
+                            <li><strong>Strong Developer Ecosystem:</strong> Ethereum has one of the largest and most active developer communities in the crypto space.</li>
+                            <li><strong>Enterprise Adoption:</strong> Many large companies, including Microsoft, JPMorgan, and ConsenSys, have integrated Ethereum’s technology into their business models.</li>
+                            <li><strong>Ethereum 2.0 Upgrade:</strong> The transition to Ethereum 2.0, with Proof-of-Stake (PoS), promises improved scalability and energy efficiency.</li>
+                            <li><strong>Established Track Record:</strong> Ethereum has been operational since 2015 and has maintained a strong market presence and trust from both retail and institutional investors.</li>
+                        </ul>
+                    `;
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="alert safe">
+                        ${coinName.charAt(0).toUpperCase() + coinName.slice(1)} is a well-known, trusted cryptocurrency with a strong track record.
+                    </div>
+                    ${detailedInfo}
+                `;
+                return; // Skip fetching news for good coins
+            }
+
+            // URL to fetch news data with language parameter set to English
+            const url = `https://newsapi.org/v2/everything?q=${coinName}&apiKey=22796e68bd934e6796da34ec4325ca15&language=en`;
+
+            try {
+                // Fetch news data from the API
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Check if the coin is recognized by checking if any articles are returned
+                if (!data.articles || data.articles.length === 0) {
+                    resultDiv.innerHTML = `<div class="alert warning">No news found for this coin. It might not exist or is not well-known in the market. Please try another coin.</div>`;
+                    return;
+                }
+
+                let newsContent = '';
+                let isSafe = true;
+
+                // List of trusted sources (you can add more trusted sources as needed)
+                const trustedSources = ['CoinDesk', 'CoinTelegraph', 'Decrypt', 'Bitcoin Magazine', 'NewsBTC', 'CryptoSlate', 'Forbes', 'The Block', 'Investopedia'];
+
+                data.articles.forEach(news => {
+                    if (news.source.name && trustedSources.includes(news.source.name)) {
+                        newsContent += `
+                            <div class="news-item">
+                                <h3>${news.title}</h3>
+                                <p>${news.description}</p>
+                                <p class="news-source">Source: <a href="${news.url}" target="_blank">${news.source.name}</a></p>
+                                <div class="alert safe">This news is from a trusted source.</div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (newsContent === '') {
+                    resultDiv.innerHTML = `<div class="alert warning">No verified news found for this coin. Please try another coin or try again later.</div>`;
+                    return;
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="alert safe">
+                        ${coinName.charAt(0).toUpperCase() + coinName.slice(1)} appears to be a safe investment based on verified news from trusted sources.
+                    </div>
+                    ${newsContent}
+                `;
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                resultDiv.innerHTML = `<div class="alert warning">An error occurred while fetching the news. Please try again later.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
